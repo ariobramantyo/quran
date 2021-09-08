@@ -24,7 +24,9 @@ class SpesificSurah {
       nameIndo: json['name']['transliteration']['id'],
       translation: json['name']['translation']['id'],
       revelation: json['revelation']['id'],
-      preBismillah: json['preBismillah']['text']['arab'],
+      preBismillah: (json['number'] != 1)
+          ? json['preBismillah']['text']['arab']
+          : 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
       verses:
           json['verses'].map<Verse>((verse) => Verse.fromJson(verse)).toList(),
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:quran/model/hadist.dart';
 import 'package:quran/model/list_surah.dart';
 import 'package:quran/model/spesific_surah.dart';
 
@@ -33,6 +34,40 @@ class ApiService {
       SpesificSurah surah = SpesificSurah.fromJson(data);
 
       return surah;
+    } else {
+      return null;
+    }
+  }
+
+  static Future<List<HadistBook>> getHadistsBook() async {
+    Uri url = Uri.parse('https://api.hadith.sutanlab.id/books');
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      List<dynamic> data = jsonDecode(response.body)['data'];
+
+      List<HadistBook> hadist =
+          data.map((data) => HadistBook.fromJson(data)).toList();
+
+      return hadist;
+    } else {
+      return List<HadistBook>.empty();
+    }
+  }
+
+  static Future<HadistsFromAuthor?> getHadistByAuthor(String name) async {
+    Uri url =
+        Uri.parse('https://api.hadith.sutanlab.id/books/$name?range=1-15');
+
+    var response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = jsonDecode(response.body)['data'];
+
+      HadistsFromAuthor hadistsFromAuthor = HadistsFromAuthor.fromJson(data);
+
+      return hadistsFromAuthor;
     } else {
       return null;
     }

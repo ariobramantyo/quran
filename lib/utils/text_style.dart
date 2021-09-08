@@ -7,4 +7,7 @@ class AppTextStyle {
     fontSize: 25,
     fontWeight: FontWeight.bold,
   );
+
+  static final titleListTile =
+      TextStyle(fontSize: 20, fontWeight: FontWeight.w600);
 }
