@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quran/controller/bookmark_controller.dart';
 import 'package:quran/model/list_surah.dart';
+import 'package:quran/model/surah.dart';
 import 'package:quran/services/api_service.dart';
 import 'package:quran/utils/color.dart';
 import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/detail_surah_page.dart';
 
 class SurahTab extends StatelessWidget {
-  const SurahTab({Key? key}) : super(key: key);
+  SurahTab({Key? key}) : super(key: key);
+
+  final bookmark = Get.put(BookmarkController());
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ListSurah>>(
-        future: ApiService.getListSurah(),
+    return FutureBuilder<List<Surah>>(
+        future: ApiService.getSurah(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -25,25 +29,41 @@ class SurahTab extends StatelessWidget {
                     children: [
                       ListTile(
                         onTap: () => Get.to(DetailSurahPage(
-                          number: surah.number,
-                          name: surah.nameIndo,
+                          surah: surah,
                         )),
+                        // leading: Container(
+                        //   height: 45,
+                        //   width: 45,
+                        //   child: Stack(
+                        //     alignment: Alignment.center,
+                        //     children: [
+                        //       Image.asset(
+                        //         'assets/number_shape.png',
+                        //         color: AppColor.primaryColor.withOpacity(0.7),
+                        //       ),
+                        //       Text(
+                        //         surah.number.toString(),
+                        //         style: TextStyle(
+                        //             fontSize: 16, fontWeight: FontWeight.w600),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                         leading: Container(
-                          height: 45,
-                          width: 45,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/number_shape.png',
-                                color: AppColor.primaryColor.withOpacity(0.7),
-                              ),
-                              Text(
-                                surah.number.toString(),
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                            ],
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(
+                            color: AppColor.thirdColor.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Center(
+                            child: Text(
+                              surah.number.toString(),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
                           ),
                         ),
                         title: Text(

@@ -34,13 +34,17 @@ class SpesificSurah {
 }
 
 class Verse {
-  int number;
+  int? id;
+  int numberInSurah;
+  int numberInQuran;
   String textArab;
   String textLatin;
   String translationIndo;
 
   Verse({
-    required this.number,
+    this.id,
+    required this.numberInSurah,
+    required this.numberInQuran,
     required this.textArab,
     required this.textLatin,
     required this.translationIndo,
@@ -48,10 +52,33 @@ class Verse {
 
   factory Verse.fromJson(Map<String, dynamic> json) {
     return Verse(
-      number: json['number']['inSurah'],
+      numberInSurah: json['number']['inSurah'],
+      numberInQuran: json['number']['inQuran'],
       textArab: json['text']['arab'],
       textLatin: json['text']['transliteration']['en'],
       translationIndo: json['translation']['id'],
     );
+  }
+
+  factory Verse.fromMap(Map<String, dynamic> map) {
+    return Verse(
+      id: map['id'],
+      numberInSurah: map['numberInSurah'],
+      numberInQuran: map['numberInQuran'],
+      textArab: map['textArab'],
+      textLatin: map['textLatin'],
+      translationIndo: map['translationIndo'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': this.id,
+      'numberInSurah': this.numberInSurah,
+      'numberInQuran': this.numberInQuran,
+      'textArab': this.textArab,
+      'textLatin': this.textLatin,
+      'translationIndo': this.translationIndo,
+    };
   }
 }

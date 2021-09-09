@@ -3,21 +3,40 @@ import 'package:http/http.dart' as http;
 import 'package:quran/model/hadist.dart';
 import 'package:quran/model/list_surah.dart';
 import 'package:quran/model/spesific_surah.dart';
+import 'package:quran/model/surah.dart';
 
 class ApiService {
-  static Future<List<ListSurah>> getListSurah() async {
-    Uri url = Uri.parse('https://api.quran.sutanlab.id/surah');
+  static Future<List<Surah>> getSurah() async {
+    Uri url = Uri.parse(
+        'https://islamic-api-indonesia.herokuapp.com/api/data/json/quran');
 
     var response = await http.get(url);
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body)['data'];
+    List<dynamic> data = jsonDecode(response.body)['result']['data'];
 
-      List<ListSurah> listSurah =
-          data.map((json) => ListSurah.fromJson(json)).toList();
+    List<Surah> listSurah = data.map<Surah>((e) => Surah.fromJson(e)).toList();
 
-      return listSurah;
-    } else {
+    return listSurah;
+  }
+
+  static Future<List<ListSurah>> getListSurah() async {
+    Uri url = Uri.parse('https://api.quran.sutanlab.id/surah');
+
+    try {
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = jsonDecode(response.body)['data'];
+
+        List<ListSurah> listSurah =
+            data.map((json) => ListSurah.fromJson(json)).toList();
+
+        return listSurah;
+      } else {
+        return List<ListSurah>.empty();
+      }
+    } catch (e) {
+      print(e.toString());
       return List<ListSurah>.empty();
     }
   }

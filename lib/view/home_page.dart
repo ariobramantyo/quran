@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quran/model/spesific_surah.dart';
+import 'package:quran/services/database_helper.dart';
 import 'package:quran/utils/color.dart';
 import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/widgets/hadist_tab.dart';
@@ -43,6 +45,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         controller: _scrollController,
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
+            // SliverToBoxAdapter(
+            //   child: Container(
+            //     height: 60,
+            //     width: double.infinity,
+            //     child: FutureBuilder<List<Verse>>(
+            //       future: DatabaseHelper.instance.getVerse(),
+            //       builder: (context, snapshot) {
+            //         if (snapshot.hasData) {
+            //           return ListView.builder(
+            //             itemCount: snapshot.data!.length,
+            //             itemBuilder: (context, index) {
+            //               var ayat = snapshot.data![index];
+            //               return Text(ayat.textLatin);
+            //             },
+            //           );
+            //         }
+            //         return Text('list kosong');
+            //       },
+            //     ),
+            //   ),
+            // ),
             SliverToBoxAdapter(
               child: Container(
                 width: double.infinity,
