@@ -1,3 +1,4 @@
+import 'package:quran/model/bookmark_hadist.dart';
 import 'package:quran/model/bookmark_verse.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -18,19 +19,28 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     var documentDirectory = await getDatabasesPath();
 
-    String path = join(documentDirectory, 'verse.db');
+    String path = join(documentDirectory, 'bookmark.db');
 
     return await openDatabase(path, version: 1, onCreate: _onCreate);
   }
 
   Future _onCreate(Database db, int version) async {
-    return db.execute(''' 
+    await db.execute(''' 
       CREATE TABLE verse(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         surahName TEXT,
         numberInQuran INTEGER,
         surahNumber INTEGER,
         numberOfVerseBookmarked INTEGER
+      )
+    ''');
+
+    await db.execute(''' 
+      CREATE TABLE hadist(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        idName TEXT,
+        number INTEGER,
+        name TEXT
       )
     ''');
   }
@@ -46,6 +56,17 @@ class DatabaseHelper {
     return verseList;
   }
 
+  Future<List<BookmarkHadist>> getHadist() async {
+    Database db = await instance.database;
+    var hadist = await db.query('hadist');
+
+    List<BookmarkHadist> hadistList = hadist.isEmpty
+        ? []
+        : hadist.map((e) => BookmarkHadist.fromMap(e)).toList();
+
+    return hadistList;
+  }
+
   Future<int> addVerse(BookmarkVerse verse) async {
     Database db = await instance.database;
 
@@ -53,19 +74,42 @@ class DatabaseHelper {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future<int> deleteAll() async {
+  Future<int> addHadist(BookmarkHadist hadist) async {
+    Database db = await instance.database;
+
+    return await db.insert('hadist', hadist.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<int> deleteAllVerse() async {
     Database db = await instance.database;
 
     return await db.delete('verse');
   }
 
-  Future<int> deleteById(int id) async {
+  Future<int> deleteAllHadist() async {
+    Database db = await instance.database;
+
+    return await db.delete('hadist');
+  }
+
+  Future<int> deleteVerseById(int id) async {
     Database db = await instance.database;
 
     return await db.delete(
       'verse',
       where: 'numberInQuran = ?',
       whereArgs: [id],
+    );
+  }
+
+  Future<int> deleteHadistById(String idName, int number) async {
+    Database db = await instance.database;
+
+    return await db.delete(
+      'hadist',
+      where: 'idName = ? AND number = ?',
+      whereArgs: [idName, number],
     );
   }
 }

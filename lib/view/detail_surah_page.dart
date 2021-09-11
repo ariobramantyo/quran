@@ -187,22 +187,24 @@ class DetailSurahPage extends StatelessWidget {
                                         Obx(
                                           () => IconButton(
                                             onPressed: () {
-                                              var bookmarkVerse = BookmarkVerse(
-                                                  numberInQuran:
-                                                      verse.numberInQuran,
-                                                  surahName: name,
-                                                  surahNumber: id,
-                                                  numberOfVerseBookmarked:
-                                                      verse.numberInSurah);
-
-                                              if (bookmark.checkBookmark(
+                                              if (bookmark.checkBookmarkVerse(
                                                   verse.numberInQuran)) {
                                                 DatabaseHelper.instance
-                                                    .deleteById(
+                                                    .deleteVerseById(
                                                         verse.numberInQuran);
-                                                bookmark.deleteById(
+                                                bookmark.deleteVerseById(
                                                     verse.numberInQuran);
                                               } else {
+                                                var bookmarkVerse =
+                                                    BookmarkVerse(
+                                                        numberInQuran:
+                                                            verse.numberInQuran,
+                                                        surahName: name,
+                                                        surahNumber: id,
+                                                        numberOfVerseBookmarked:
+                                                            verse
+                                                                .numberInSurah);
+
                                                 DatabaseHelper.instance
                                                     .addVerse(bookmarkVerse);
                                                 bookmark.listVerse
@@ -210,8 +212,9 @@ class DetailSurahPage extends StatelessWidget {
                                                 bookmark.listVerse.refresh();
                                               }
                                             },
-                                            icon: Icon(bookmark.checkBookmark(
-                                                    verse.numberInQuran)
+                                            icon: Icon(bookmark
+                                                    .checkBookmarkVerse(
+                                                        verse.numberInQuran)
                                                 ? Icons.bookmark
                                                 : Icons
                                                     .bookmark_border_outlined),
