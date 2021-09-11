@@ -24,7 +24,7 @@ class SpesificSurah {
       nameIndo: json['name']['transliteration']['id'],
       translation: json['name']['translation']['id'],
       revelation: json['revelation']['id'],
-      preBismillah: (json['number'] != 1)
+      preBismillah: (json['number'] != 1 && json['number'] != 9)
           ? json['preBismillah']['text']['arab']
           : 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
       verses:

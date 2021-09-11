@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
-import 'package:quran/model/spesific_surah.dart';
+import 'package:quran/model/bookmark_verse.dart';
 import 'package:quran/services/database_helper.dart';
 
 class BookmarkController extends GetxController {
-  var listVerse = List<Verse>.empty().obs;
+  var listVerse = List<BookmarkVerse>.empty().obs;
 
   @override
   void onInit() async {
@@ -11,9 +11,9 @@ class BookmarkController extends GetxController {
     super.onInit();
   }
 
-  bool checkBookmark(int numberINQuran) {
+  bool checkBookmark(int numberInQuran) {
     for (int i = 0; i < listVerse.length; i++) {
-      if (listVerse[i].numberInQuran == numberINQuran) {
+      if (listVerse[i].numberInQuran == numberInQuran) {
         return true;
       }
     }

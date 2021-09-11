@@ -1,4 +1,4 @@
-import 'package:quran/model/spesific_surah.dart';
+import 'package:quran/model/bookmark_verse.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -27,26 +27,26 @@ class DatabaseHelper {
     return db.execute(''' 
       CREATE TABLE verse(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        numberInSurah INTEGER,
+        surahName TEXT,
         numberInQuran INTEGER,
-        textArab TEXT,
-        textLatin TEXT,
-        translationIndo tEXT 
+        surahNumber INTEGER,
+        numberOfVerseBookmarked INTEGER
       )
     ''');
   }
 
-  Future<List<Verse>> getVerse() async {
+  Future<List<BookmarkVerse>> getVerse() async {
     Database db = await instance.database;
     var verse = await db.query('verse');
 
-    List<Verse> verseList =
-        verse.isEmpty ? [] : verse.map((e) => Verse.fromMap(e)).toList();
+    List<BookmarkVerse> verseList = verse.isEmpty
+        ? []
+        : verse.map((e) => BookmarkVerse.fromMap(e)).toList();
 
     return verseList;
   }
 
-  Future<int> addVerse(Verse verse) async {
+  Future<int> addVerse(BookmarkVerse verse) async {
     Database db = await instance.database;
 
     return await db.insert('verse', verse.toMap(),
