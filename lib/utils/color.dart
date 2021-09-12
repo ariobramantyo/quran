@@ -9,4 +9,5 @@ class AppColor {
   static const thirdColor = Color(0xffb475fd);
   static const titleColor = Colors.black;
   static const subtitleColor = Color(0xffb9a2d8);
+  static const subColor = Color(0xffddc6f7);
 }
