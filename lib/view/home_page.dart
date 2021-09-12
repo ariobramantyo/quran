@@ -9,6 +9,7 @@ import 'package:quran/utils/color.dart';
 import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/detail_surah_page.dart';
 import 'package:quran/view/salah_schedule_page.dart';
+import 'package:quran/view/search_page.dart';
 import 'package:quran/view/widgets/hadist_tab.dart';
 import 'package:quran/view/widgets/navigation_drawer.dart';
 import 'package:quran/view/widgets/surah_tab.dart';
@@ -117,6 +118,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           style: AppTextStyle.appBarStyle,
         ),
         iconTheme: IconThemeData(color: Colors.grey),
+        actions: [
+          IconButton(
+              onPressed: () => Get.to(() => SearchPage()),
+              icon: Icon(Icons.search))
+        ],
       ),
       body: NestedScrollView(
         controller: _scrollController,
