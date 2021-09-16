@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:lottie/lottie.dart';
 import 'package:quran/controller/bookmark_controller.dart';
 import 'package:quran/model/bookmark_verse.dart';
 import 'package:quran/model/spesific_surah.dart';
-import 'package:quran/model/surah.dart';
 import 'package:quran/services/api_service.dart';
 import 'package:quran/services/database_helper.dart';
 import 'package:quran/utils/color.dart';
@@ -12,14 +12,12 @@ import 'package:quran/utils/text_style.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class DetailSurahPage extends StatelessWidget {
-  final Surah? surah;
   final int id;
   final String name;
   final int initialIndex;
 
   DetailSurahPage(
       {Key? key,
-      this.surah,
       required this.id,
       required this.name,
       required this.initialIndex})
@@ -36,7 +34,12 @@ class DetailSurahPage extends StatelessWidget {
       'id': id,
     };
 
+    bookmark.lastRead.value = value;
     box.write('lastRead', value);
+  }
+
+  void showSnackbar(String title, String message) {
+    Get.snackbar(title, message);
   }
 
   Widget containerHeader(String nameIndo, String translation,
@@ -104,12 +107,10 @@ class DetailSurahPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print(surah.number);
     return Scaffold(
         appBar: AppBar(
           title: Text(
             name,
-            // surah.nameIndo,'
             style: AppTextStyle.appBarStyle,
           ),
           backgroundColor: Colors.white,
@@ -119,137 +120,173 @@ class DetailSurahPage extends StatelessWidget {
         body: FutureBuilder<SpesificSurah?>(
           future: ApiService.getSpesificSurah(id),
           builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Lottie.asset('assets/error_lottie.json',
+                  width: 300, height: 300);
+            }
             if (snapshot.hasData) {
-              var surah = snapshot.data;
-              return ScrollablePositionedList.builder(
-                // controller: _scrollController,
-                // physics: ClampingScrollPhysics(),
-                // shrinkWrap: true,
-                initialScrollIndex: initialIndex,
-                itemCount: surah!.numberOfVerses + 1,
-                itemBuilder: (context, index) {
-                  var verse = index == 0
-                      ? surah.verses[index]
-                      : surah.verses[index - 1];
+              return snapshot.data != null
+                  ? ScrollablePositionedList.builder(
+                      initialScrollIndex: initialIndex,
+                      itemCount: snapshot.data!.numberOfVerses + 1,
+                      itemBuilder: (context, index) {
+                        var surah = snapshot.data;
+                        var verse = index == 0
+                            ? snapshot.data!.verses[index]
+                            : snapshot.data!.verses[index - 1];
 
-                  return (index == 0)
-                      ? containerHeader(
-                          surah.nameIndo,
-                          surah.translation,
-                          surah.preBismillah,
-                          surah.numberOfVerses,
-                          surah.revelation,
-                          surah.number)
-                      : Container(
-                          margin: EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 20),
-                          // color: Colors.grey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                // height: 40,
-                                width: double.infinity,
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: AppColor.thirdColor.withOpacity(0.05),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                        return (index == 0)
+                            ? containerHeader(
+                                surah!.nameIndo,
+                                surah.translation,
+                                surah.preBismillah,
+                                surah.numberOfVerses,
+                                surah.revelation,
+                                surah.number)
+                            : Container(
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                            color: AppColor.primaryColor,
-                                            shape: BoxShape.circle),
-                                        child: Text(
-                                          verse.numberInSurah.toString(),
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        )),
-                                    Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            pinLastRead(surah.nameIndo,
-                                                verse.numberInSurah);
-                                          },
-                                          icon: Icon(Icons.push_pin_outlined),
-                                          iconSize: 28,
-                                          color: AppColor.primaryColor,
-                                        ),
-                                        Obx(
-                                          () => IconButton(
-                                            onPressed: () {
-                                              if (bookmark.checkBookmarkVerse(
-                                                  verse.numberInQuran)) {
-                                                DatabaseHelper.instance
-                                                    .deleteVerseById(
-                                                        verse.numberInQuran);
-                                                bookmark.deleteVerseById(
-                                                    verse.numberInQuran);
-                                              } else {
-                                                var bookmarkVerse =
-                                                    BookmarkVerse(
-                                                        numberInQuran:
-                                                            verse.numberInQuran,
-                                                        surahName: name,
-                                                        surahNumber: id,
-                                                        numberOfVerseBookmarked:
-                                                            verse
-                                                                .numberInSurah);
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.thirdColor
+                                            .withOpacity(0.05),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                              padding: EdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                  color: AppColor.primaryColor,
+                                                  shape: BoxShape.circle),
+                                              child: Text(
+                                                verse.numberInSurah.toString(),
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              )),
+                                          Row(
+                                            children: [
+                                              Obx(
+                                                () => IconButton(
+                                                  onPressed: () {
+                                                    pinLastRead(surah!.nameIndo,
+                                                        verse.numberInSurah);
+                                                    Get.snackbar(
+                                                        'Terakhir dibaca',
+                                                        'Q.S. ${surah.nameIndo} ayat ${verse.numberInSurah} ditandai terakhir dibaca');
+                                                  },
+                                                  icon: Icon(bookmark.lastRead[
+                                                                  'numberInSurah'] ==
+                                                              verse
+                                                                  .numberInSurah &&
+                                                          bookmark.lastRead[
+                                                                  'id'] ==
+                                                              id
+                                                      ? Icons.push_pin
+                                                      : Icons
+                                                          .push_pin_outlined),
+                                                  iconSize: 28,
+                                                  color: AppColor.primaryColor,
+                                                ),
+                                              ),
+                                              Obx(
+                                                () => IconButton(
+                                                  onPressed: () {
+                                                    if (bookmark
+                                                        .checkBookmarkVerse(verse
+                                                            .numberInQuran)) {
+                                                      DatabaseHelper.instance
+                                                          .deleteVerseById(verse
+                                                              .numberInQuran);
+                                                      bookmark.deleteVerseById(
+                                                          verse.numberInQuran);
+                                                      Get.snackbar('Bookmark',
+                                                          'Q.S. ${surah!.nameIndo} ayat ${verse.numberInSurah} dihapus dari folder bookmark');
+                                                    } else {
+                                                      var bookmarkVerse = BookmarkVerse(
+                                                          numberInQuran: verse
+                                                              .numberInQuran,
+                                                          surahName: name,
+                                                          surahNumber: id,
+                                                          numberOfVerseBookmarked:
+                                                              verse
+                                                                  .numberInSurah);
 
-                                                DatabaseHelper.instance
-                                                    .addVerse(bookmarkVerse);
-                                                bookmark.listVerse
-                                                    .add(bookmarkVerse);
-                                                bookmark.listVerse.refresh();
-                                              }
-                                            },
-                                            icon: Icon(bookmark
-                                                    .checkBookmarkVerse(
-                                                        verse.numberInQuran)
-                                                ? Icons.bookmark
-                                                : Icons
-                                                    .bookmark_border_outlined),
-                                            iconSize: 28,
-                                            color: AppColor.primaryColor,
-                                          ),
-                                        )
-                                      ],
+                                                      DatabaseHelper.instance
+                                                          .addVerse(
+                                                              bookmarkVerse);
+                                                      bookmark.listVerse
+                                                          .add(bookmarkVerse);
+                                                      bookmark.listVerse
+                                                          .refresh();
+                                                      Get.snackbar('Bookmark',
+                                                          'Q.S. ${surah!.nameIndo} ayat ${verse.numberInSurah} ditambahkan ke folder bookmark');
+                                                    }
+                                                  },
+                                                  icon: Icon(bookmark
+                                                          .checkBookmarkVerse(
+                                                              verse
+                                                                  .numberInQuran)
+                                                      ? Icons.bookmark
+                                                      : Icons
+                                                          .bookmark_border_outlined),
+                                                  iconSize: 28,
+                                                  color: AppColor.primaryColor,
+                                                ),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        verse.textArab,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(fontSize: 28),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Container(
+                                      width: double.infinity,
+                                      child: Text(
+                                        verse.textLatin,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: AppColor.primaryColor),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Container(
+                                      width: double.infinity,
+                                      child: Text(
+                                        verse.translationIndo,
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 20),
+                                      ),
                                     )
                                   ],
                                 ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                padding: EdgeInsets.only(left: 10),
-                                child: Text(
-                                  verse.textArab,
-                                  textAlign: TextAlign.right,
-                                  style: TextStyle(fontSize: 28),
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Container(
-                                width: double.infinity,
-                                child: Text(
-                                  verse.textLatin,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                              )
-                            ],
-                          ),
-                        );
-                },
-              );
+                              );
+                      },
+                    )
+                  : Lottie.asset('assets/error_lottie.json',
+                      width: 300, height: 300);
             }
             return Center(
               child: CircularProgressIndicator(),

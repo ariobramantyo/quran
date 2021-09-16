@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:quran/controller/user_location_controller.dart';
 import 'package:quran/model/salah_time.dart';
 import 'package:quran/utils/color.dart';
@@ -26,29 +27,54 @@ class SalahSchedulePage extends StatelessWidget {
     } else if (DateTime.now().isBefore(_convertTime(salahTime.maghrib))) {
       return 'Maghrib ${salahTime.maghrib}';
     } else if (DateTime.now().isAtSameMomentAs(_convertTime(salahTime.isha)) ||
-        DateTime.now().isAfter(_convertTime(salahTime.isha))) {
-      return 'Subuh ${salahTime.fajr}';
-    } else {
+        DateTime.now().isBefore(_convertTime(salahTime.isha))) {
       return 'Isya ${salahTime.isha}';
+    } else {
+      return '';
     }
+  }
+
+  String? _nextPrayer(List<String> prayerTime, List<String> prayerName) {
+    for (int i = 0; i < prayerTime.length; i++) {
+      if (i == 1 || i == 4) {
+        continue;
+      }
+      print('${_convertTime(prayerTime[i])}' + ' ${DateTime.now()}');
+      print(DateTime.now().isBefore(_convertTime(prayerTime[i])));
+      if (DateTime.now().isBefore(_convertTime(prayerTime[i]))) {
+        return '${prayerName[i]} ${prayerTime[i]}';
+      }
+    }
+    return 'Waktu Isya telah lewat';
   }
 
   Widget salahTimeItem(String name, String time) {
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColor.thirdColor.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(name),
-          Text(time),
+          Text(
+            name,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+          Text(
+            time,
+            style: TextStyle(fontSize: 18),
+          ),
         ],
       ),
     );
   }
 
   final _todayHijri = HijriCalendar.now().toFormat('dd MMMM yyyy');
-  final _today = DateFormat('d MMMM y').format(DateTime.now());
+  final _today = DateFormat('d MMM y').format(DateTime.now());
 
   final locationController = Get.find<UserLocationController>();
 
@@ -62,7 +88,10 @@ class SalahSchedulePage extends StatelessWidget {
           ),
           actions: [
             IconButton(
-                onPressed: () => locationController.determinePosition(),
+                onPressed: () {
+                  locationController.determinePosition();
+                  locationController.getPrayerTimes();
+                },
                 icon: Icon(Icons.refresh))
           ],
           backgroundColor: Colors.white,
@@ -72,82 +101,134 @@ class SalahSchedulePage extends StatelessWidget {
           builder: (controller) {
             return controller.currentAddress != null &&
                     controller.currentPosition != null
-                ? Column(children: [
+                ? ListView(children: [
                     Container(
-                      height: Get.size.height / 3,
+                      height: 200,
                       width: double.infinity,
-                      color: AppColor.thirdColor,
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      margin: EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          image: DecorationImage(
+                              image: AssetImage('assets/desert.jpg'),
+                              fit: BoxFit.fill)),
+                      child: Stack(
                         children: [
-                          Text(
-                            _nextSalahTime(controller.salahTime!),
-                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          Container(
+                            width: double.infinity,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: AppColor.thirdColor.withOpacity(0.85),
+                            ),
                           ),
-                          SizedBox(height: 20),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on, color: Colors.white),
-                              SizedBox(width: 5),
-                              Column(
-                                // mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    controller.currentAddress!.locality ??
-                                        'Address',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 18),
-                                  ),
-                                  Text(
-                                    controller.currentAddress!
-                                            .subAdministrativeArea ??
-                                        'Address',
-                                    style: TextStyle(
-                                        color: AppColor.subColor, fontSize: 18),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.calendar_today,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 5),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _today,
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 18),
-                                  ),
-                                  Text(
-                                    _todayHijri,
-                                    style: TextStyle(
-                                        color: AppColor.subColor, fontSize: 18),
-                                  ),
-                                ],
-                              )
-                            ],
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  controller.salahTime != null
+                                      ? _nextSalahTime(controller.salahTime!) ==
+                                              ''
+                                          ? 'Waktu Isya telah lewat'
+                                          : _nextSalahTime(
+                                                  controller.salahTime!)
+                                              .split(' ')
+                                              .first
+                                      : 'Terjadi kesalahan',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
+                                Text(
+                                  controller.salahTime != null
+                                      ? _nextSalahTime(controller.salahTime!) ==
+                                              ''
+                                          ? '-'
+                                          : _nextSalahTime(
+                                                  controller.salahTime!)
+                                              .split(' ')
+                                              .last
+                                      : '-',
+                                  style: TextStyle(
+                                      fontSize: 40,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      color: Colors.white,
+                                      size: 15,
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      controller.currentAddress!.locality ??
+                                          'mencari lokasi..',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 5),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today,
+                                      color: Colors.white,
+                                      size: 15,
+                                    ),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      _today,
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 15),
+                                    ),
+                                    Text(
+                                      ' ($_todayHijri)',
+                                      style: TextStyle(
+                                          color: AppColor.subColor,
+                                          fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    salahTimeItem('Subuh', controller.salahTime!.fajr),
-                    salahTimeItem('Dzuhur', controller.salahTime!.dhuhr),
-                    salahTimeItem('Asar', controller.salahTime!.asr),
-                    salahTimeItem('Maghrib', controller.salahTime!.maghrib),
-                    salahTimeItem('Isya', controller.salahTime!.isha),
+                    controller.salahTime != null
+                        ? Column(
+                            children: [
+                              salahTimeItem(
+                                  'Subuh', controller.salahTime!.fajr),
+                              salahTimeItem(
+                                  'Terbit', controller.salahTime!.sunrise),
+                              salahTimeItem(
+                                  'Dzuhur', controller.salahTime!.dhuhr),
+                              salahTimeItem('Asar', controller.salahTime!.asr),
+                              salahTimeItem(
+                                  'Maghrib', controller.salahTime!.maghrib),
+                              salahTimeItem('Isya', controller.salahTime!.isha),
+                            ],
+                          )
+                        : Lottie.asset('assets/error_lottie.json',
+                            width: 300, height: 300),
+                    SizedBox(height: 10)
                   ])
                 : Container(
-                    child: Text(
-                        'Nyalakan lokasi dan internet anda ntuk melihat jadwal solat'),
+                    child: Center(
+                      child: Container(
+                        width: 150,
+                        child: Text(
+                          'Nyalakan lokasi dan internet anda ntuk melihat jadwal solat',
+                          style: TextStyle(fontSize: 17),
+                        ),
+                      ),
+                    ),
                   );
           },
         ));

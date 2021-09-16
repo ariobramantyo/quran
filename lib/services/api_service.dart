@@ -4,22 +4,8 @@ import 'package:quran/model/hadist.dart';
 import 'package:quran/model/list_surah.dart';
 import 'package:quran/model/salah_time.dart';
 import 'package:quran/model/spesific_surah.dart';
-import 'package:quran/model/surah.dart';
 
 class ApiService {
-  static Future<List<Surah>> getSurah() async {
-    Uri url = Uri.parse(
-        'https://islamic-api-indonesia.herokuapp.com/api/data/json/quran');
-
-    var response = await http.get(url);
-
-    List<dynamic> data = jsonDecode(response.body)['result']['data'];
-
-    List<Surah> listSurah = data.map<Surah>((e) => Surah.fromJson(e)).toList();
-
-    return listSurah;
-  }
-
   static Future<List<ListSurah>> getListSurah() async {
     Uri url = Uri.parse('https://api.quran.sutanlab.id/surah');
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:quran/controller/bookmark_controller.dart';
 import 'package:quran/model/bookmark_hadist.dart';
 import 'package:quran/model/hadist.dart';
@@ -38,6 +39,10 @@ class DetailHadistPage extends StatelessWidget {
       body: FutureBuilder<HadistsFromAuthor?>(
         future: ApiService.getHadistByAuthor(id),
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Lottie.asset('assets/error_lottie.json',
+                width: 300, height: 300);
+          }
           if (snapshot.hasData) {
             return snapshot.data != null
                 ? ScrollablePositionedList.builder(
@@ -88,6 +93,8 @@ class DetailHadistPage extends StatelessWidget {
                                                   id, hadist.number);
                                           bookmark.deleteHadistById(
                                               hadist.number, id);
+                                          Get.snackbar('Bookmark',
+                                              'Hadist $name no. ${hadist.number} dihapus dari folder bookmark');
                                         } else {
                                           var bookmarkHadist = BookmarkHadist(
                                               idName: id,
@@ -99,6 +106,8 @@ class DetailHadistPage extends StatelessWidget {
                                           bookmark.listHadist
                                               .add(bookmarkHadist);
                                           bookmark.listHadist.refresh();
+                                          Get.snackbar('Bookmark',
+                                              'Hadist $name no. ${hadist.number} ditambahkan ke folder bookmark');
                                         }
                                       },
                                       icon: Icon(bookmark.checkBookmarkHadist(
@@ -134,7 +143,8 @@ class DetailHadistPage extends StatelessWidget {
                         ),
                       );
                     })
-                : Container();
+                : Lottie.asset('assets/error_lottie.json',
+                    width: 300, height: 300);
           }
           return Center(
             child: CircularProgressIndicator(),

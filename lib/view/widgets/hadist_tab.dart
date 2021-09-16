@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:quran/model/hadist.dart';
 import 'package:quran/services/api_service.dart';
 import 'package:quran/utils/text_style.dart';
@@ -15,21 +16,25 @@ class HadistTab extends StatelessWidget {
       future: ApiService.getHadistsBook(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              var hadist = snapshot.data![index];
-              return ListTile(
-                onTap: () => Get.to(() => DetailHadistPage(
-                      id: hadist.id,
-                      name: hadist.name,
-                      initialScrollIndex: 0,
-                    )),
-                title: Text(hadist.name, style: AppTextStyle.titleListTile),
-                subtitle: Text('Kumpulan hadist ${hadist.name}'),
-              );
-            },
-          );
+          return snapshot.data!.length > 0
+              ? ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    var hadist = snapshot.data![index];
+                    return ListTile(
+                      onTap: () => Get.to(() => DetailHadistPage(
+                            id: hadist.id,
+                            name: hadist.name,
+                            initialScrollIndex: 0,
+                          )),
+                      title:
+                          Text(hadist.name, style: AppTextStyle.titleListTile),
+                      subtitle: Text('Kumpulan hadist ${hadist.name}'),
+                    );
+                  },
+                )
+              : Lottie.asset('assets/error_lottie.json',
+                  width: 300, height: 300);
         }
         return Center(
           child: CircularProgressIndicator(),

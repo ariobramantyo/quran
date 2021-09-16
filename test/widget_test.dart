@@ -37,13 +37,13 @@ void main() async {
   //   expect(find.text('1'), findsOneWidget);
   // });
   // List<ListSurah> lisSurah = await ApiService.getListSurah();
-  DateTime convertTime(String time) {
-    if (time != '-') {
-      String date = DateTime.now().toString().substring(0, 10);
-      return DateTime.parse('$date $time');
-    }
-    return DateTime.now();
-  }
+  // DateTime convertTime(String time) {
+  //   if (time != '-') {
+  //     String date = DateTime.now().toString().substring(0, 10);
+  //     return DateTime.parse('$date $time');
+  //   }
+  //   return DateTime.now();
+  // }
 
   // String nextSalahTime(SalahTime salahTime) {
   //   if (DateTime.now().isBefore(convertTime(salahTime.fajr))) {
@@ -62,34 +62,42 @@ void main() async {
   //   }
   // }
 
-  String nextSalahTimeTest(SalahTime salahTime) {
-    DateTime date = DateTime.parse('2021-09-11 19:00');
-    if (date.isBefore(convertTime(salahTime.fajr))) {
-      return 'Subuh ${salahTime.fajr}';
-    } else if (date.isBefore(convertTime(salahTime.dhuhr))) {
-      return 'Dzuhur ${salahTime.dhuhr}';
-    } else if (date.isBefore(convertTime(salahTime.asr))) {
-      return 'Asar ${salahTime.asr}';
-    } else if (date.isBefore(convertTime(salahTime.maghrib))) {
-      return 'Maghrib ${salahTime.maghrib}';
-    } else if (date.isAtSameMomentAs(convertTime(salahTime.isha)) ||
-        date.isAfter(convertTime(salahTime.isha))) {
-      return 'Subuh ${salahTime.fajr}';
-    } else {
-      return 'Isya ${salahTime.isha}';
-    }
+  var dummy = List.filled(4, '');
+
+  for (int i = 0; i < 5; i++) {
+    dummy[i] = i.toString();
   }
 
-  SalahTime? salahTime =
-      await ApiService.getSalahTime(39.81666564941406, 21.416667938232425);
+  print(dummy);
 
-  print(salahTime!.fajr);
-  print(salahTime.dhuhr);
-  print(salahTime.asr);
-  print(salahTime.maghrib);
-  print(salahTime.isha);
+  // String nextSalahTimeTest(SalahTime salahTime) {
+  //   DateTime date = DateTime.parse('2021-09-11 19:00');
+  //   if (date.isBefore(convertTime(salahTime.fajr))) {
+  //     return 'Subuh ${salahTime.fajr}';
+  //   } else if (date.isBefore(convertTime(salahTime.dhuhr))) {
+  //     return 'Dzuhur ${salahTime.dhuhr}';
+  //   } else if (date.isBefore(convertTime(salahTime.asr))) {
+  //     return 'Asar ${salahTime.asr}';
+  //   } else if (date.isBefore(convertTime(salahTime.maghrib))) {
+  //     return 'Maghrib ${salahTime.maghrib}';
+  //   } else if (date.isAtSameMomentAs(convertTime(salahTime.isha)) ||
+  //       date.isAfter(convertTime(salahTime.isha))) {
+  //     return 'Subuh ${salahTime.fajr}';
+  //   } else {
+  //     return 'Isya ${salahTime.isha}';
+  //   }
+  // }
 
-  print('waktu solat selanjutnya ${nextSalahTimeTest(salahTime)}');
+  // SalahTime? salahTime =
+  //     await ApiService.getSalahTime(39.81666564941406, 21.416667938232425);
+
+  // print(salahTime!.fajr);
+  // print(salahTime.dhuhr);
+  // print(salahTime.asr);
+  // print(salahTime.maghrib);
+  // print(salahTime.isha);
+
+  // print('waktu solat selanjutnya ${nextSalahTimeTest(salahTime)}');
 
   // String time = convertTime(salahTime.dhuhr);
 
