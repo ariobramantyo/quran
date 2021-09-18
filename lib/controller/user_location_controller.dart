@@ -11,6 +11,7 @@ class UserLocationController extends GetxController {
   SalahTime? salahTime;
   List<String>? prayerTimes;
   List<String>? prayerNames;
+  String nextPrayerTime = '-';
 
   @override
   void onInit() async {
@@ -19,6 +20,40 @@ class UserLocationController extends GetxController {
       getPrayerTimes();
     }
     super.onInit();
+  }
+
+  DateTime _convertTime(String time) {
+    if (time != '-') {
+      String date = DateTime.now().toString().substring(0, 10);
+      return DateTime.parse('$date $time');
+    }
+    return DateTime.now();
+  }
+
+  String _nextSalahTime(SalahTime salahTime) {
+    if (DateTime.now().isBefore(_convertTime(salahTime.fajr))) {
+      return 'Subuh ${salahTime.fajr}';
+    } else if (DateTime.now().isBefore(_convertTime(salahTime.dhuhr))) {
+      return 'Dzuhur ${salahTime.dhuhr}';
+    } else if (DateTime.now().isBefore(_convertTime(salahTime.asr))) {
+      return 'Asar ${salahTime.asr}';
+    } else if (DateTime.now().isBefore(_convertTime(salahTime.maghrib))) {
+      return 'Maghrib ${salahTime.maghrib}';
+    } else if (DateTime.now().isAtSameMomentAs(_convertTime(salahTime.isha)) ||
+        DateTime.now().isBefore(_convertTime(salahTime.isha))) {
+      return 'Isya ${salahTime.isha}';
+    } else {
+      return '';
+    }
+  }
+
+  void updateNextPrayerTime() {
+    if (salahTime != null) {
+      Future.delayed(Duration(seconds: 5), () {
+        nextPrayerTime = _nextSalahTime(salahTime!);
+        update();
+      });
+    }
   }
 
   Future determinePosition() async {
@@ -45,6 +80,9 @@ class UserLocationController extends GetxController {
         if (currentPosition != null) {
           salahTime = await ApiService.getSalahTime(
               currentPosition!.longitude, currentPosition!.latitude);
+          if (salahTime != null) {
+            nextPrayerTime = _nextSalahTime(salahTime!);
+          }
         }
 
         print(currentAddress!.locality);

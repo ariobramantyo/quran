@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:quran/controller/user_location_controller.dart';
@@ -37,6 +38,10 @@ class SalahTimeHeader extends StatelessWidget {
   }
 
   var _today = DateFormat('d MMMM y').format(DateTime.now());
+  final _countdownStyle = TextStyle(
+    color: AppColor.subColor,
+    fontSize: 22,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -81,33 +86,82 @@ class SalahTimeHeader extends StatelessWidget {
                                 children: [
                                   Text(
                                     controller.salahTime != null
-                                        ? _nextSalahTime(
-                                                    controller.salahTime!) ==
-                                                ''
+                                        ? controller.nextPrayerTime == ''
                                             ? 'Waktu Isya telah lewat'
-                                            : _nextSalahTime(
-                                                    controller.salahTime!)
+                                            : controller.nextPrayerTime
                                                 .split(' ')
                                                 .first
                                         : 'Terjadi kesalahan',
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 15),
                                   ),
-                                  Text(
-                                    controller.salahTime != null
-                                        ? _nextSalahTime(
-                                                    controller.salahTime!) ==
-                                                ''
-                                            ? '-'
-                                            : _nextSalahTime(
-                                                    controller.salahTime!)
-                                                .split(' ')
-                                                .last
-                                        : '-',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 42,
-                                        fontWeight: FontWeight.bold),
+                                  Container(
+                                    height: 42,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          controller.salahTime != null
+                                              ? controller.nextPrayerTime == ''
+                                                  ? '-'
+                                                  : controller.nextPrayerTime
+                                                      .split(' ')
+                                                      .last
+                                              : '-',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 42,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(width: 5),
+                                        CountdownTimer(
+                                          endTime: (controller.nextPrayerTime !=
+                                                      '' &&
+                                                  controller.nextPrayerTime !=
+                                                      '-')
+                                              ? _convertTime(controller
+                                                          .nextPrayerTime
+                                                          .split(' ')
+                                                          .last)
+                                                      .millisecondsSinceEpoch +
+                                                  1000
+                                              : 0,
+                                          widgetBuilder: (context, time) {
+                                            if (time == null) {
+                                              print('Game over');
+                                              controller.updateNextPrayerTime();
+                                              return Text(
+                                                  '(Waktu salat telah tiba)',
+                                                  style: TextStyle(
+                                                      color:
+                                                          AppColor.subColor));
+                                            }
+                                            return Row(
+                                              children: [
+                                                Text(
+                                                    time.hours == null
+                                                        ? '(00:'
+                                                        : '(${time.hours}:',
+                                                    style: _countdownStyle),
+                                                Text(
+                                                    time.min == null
+                                                        ? '00:'
+                                                        : '${time.min}:',
+                                                    style: _countdownStyle),
+                                                Text(
+                                                    time.sec == null
+                                                        ? '00)'
+                                                        : '${time.sec})',
+                                                    style: _countdownStyle),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               )

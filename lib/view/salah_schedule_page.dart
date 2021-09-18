@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:get/get.dart';
 import 'package:hijri/hijri_calendar.dart';
 import 'package:intl/intl.dart';
@@ -78,6 +79,11 @@ class SalahSchedulePage extends StatelessWidget {
 
   final locationController = Get.find<UserLocationController>();
 
+  final _countdownStyle = TextStyle(
+    color: AppColor.subColor,
+    fontSize: 22,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,11 +133,9 @@ class SalahSchedulePage extends StatelessWidget {
                               children: [
                                 Text(
                                   controller.salahTime != null
-                                      ? _nextSalahTime(controller.salahTime!) ==
-                                              ''
+                                      ? controller.nextPrayerTime == ''
                                           ? 'Waktu Isya telah lewat'
-                                          : _nextSalahTime(
-                                                  controller.salahTime!)
+                                          : controller.nextPrayerTime
                                               .split(' ')
                                               .first
                                       : 'Terjadi kesalahan',
@@ -140,11 +144,9 @@ class SalahSchedulePage extends StatelessWidget {
                                 ),
                                 Text(
                                   controller.salahTime != null
-                                      ? _nextSalahTime(controller.salahTime!) ==
-                                              ''
+                                      ? controller.nextPrayerTime == ''
                                           ? '-'
-                                          : _nextSalahTime(
-                                                  controller.salahTime!)
+                                          : controller.nextPrayerTime
                                               .split(' ')
                                               .last
                                       : '-',
@@ -152,6 +154,46 @@ class SalahSchedulePage extends StatelessWidget {
                                       fontSize: 40,
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold),
+                                ),
+                                CountdownTimer(
+                                  endTime: (controller.nextPrayerTime != '' &&
+                                          controller.nextPrayerTime != '-')
+                                      ? _convertTime(controller.nextPrayerTime
+                                                  .split(' ')
+                                                  .last)
+                                              .millisecondsSinceEpoch +
+                                          1000
+                                      : 0,
+                                  widgetBuilder: (context, time) {
+                                    if (time == null) {
+                                      print('Game over');
+                                      controller.updateNextPrayerTime();
+                                      return Text('(Waktu solat telah tiba)',
+                                          style: TextStyle(
+                                              color: AppColor.subColor));
+                                    }
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                            time.hours == null
+                                                ? '(00:'
+                                                : '(${time.hours}:',
+                                            style: _countdownStyle),
+                                        Text(
+                                            time.min == null
+                                                ? '00:'
+                                                : '${time.min}:',
+                                            style: _countdownStyle),
+                                        Text(
+                                            time.sec == null
+                                                ? '00)'
+                                                : '${time.sec})',
+                                            style: _countdownStyle),
+                                      ],
+                                    );
+                                  },
                                 ),
                                 SizedBox(height: 20),
                                 Row(
