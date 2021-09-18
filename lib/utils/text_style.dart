@@ -4,7 +4,7 @@ import 'package:quran/utils/color.dart';
 class AppTextStyle {
   static final appBarStyle = TextStyle(
     color: AppColor.primaryColor,
-    fontSize: 25,
+    fontSize: 23,
     fontWeight: FontWeight.bold,
   );
 

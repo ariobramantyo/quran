@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quran/controller/bookmark_controller.dart';
+import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/model/bookmark_verse.dart';
 import 'package:quran/model/spesific_surah.dart';
 import 'package:quran/services/api_service.dart';
@@ -24,6 +25,7 @@ class DetailSurahPage extends StatelessWidget {
       : super(key: key);
 
   final bookmark = Get.find<BookmarkController>();
+  final themeController = Get.find<ThemeController>();
 
   void pinLastRead(String nameIndo, int numberInSurah) {
     final box = GetStorage();
@@ -109,13 +111,9 @@ class DetailSurahPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            name,
-            style: AppTextStyle.appBarStyle,
-          ),
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.grey),
+          title: Text(name),
           elevation: 1,
+          backwardsCompatibility: false,
         ),
         body: FutureBuilder<SpesificSurah?>(
           future: ApiService.getSpesificSurah(id),
@@ -198,7 +196,10 @@ class DetailSurahPage extends StatelessWidget {
                                                       : Icons
                                                           .push_pin_outlined),
                                                   iconSize: 28,
-                                                  color: AppColor.primaryColor,
+                                                  color: themeController
+                                                          .darkMode.value
+                                                      ? AppColor.thirdColor
+                                                      : AppColor.primaryColor,
                                                 ),
                                               ),
                                               Obx(
@@ -243,7 +244,10 @@ class DetailSurahPage extends StatelessWidget {
                                                       : Icons
                                                           .bookmark_border_outlined),
                                                   iconSize: 28,
-                                                  color: AppColor.primaryColor,
+                                                  color: themeController
+                                                          .darkMode.value
+                                                      ? AppColor.thirdColor
+                                                      : AppColor.primaryColor,
                                                 ),
                                               )
                                             ],
@@ -262,15 +266,19 @@ class DetailSurahPage extends StatelessWidget {
                                     ),
                                     SizedBox(height: 8),
                                     Container(
-                                      width: double.infinity,
-                                      child: Text(
-                                        verse.textLatin,
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: AppColor.primaryColor),
-                                      ),
-                                    ),
+                                        width: double.infinity,
+                                        child: Obx(
+                                          () => Text(
+                                            verse.textLatin,
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                color: themeController
+                                                        .darkMode.value
+                                                    ? AppColor.thirdColor
+                                                    : AppColor.primaryColor),
+                                          ),
+                                        )),
                                     SizedBox(height: 8),
                                     Container(
                                       width: double.infinity,

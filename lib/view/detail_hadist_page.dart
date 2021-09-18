@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quran/controller/bookmark_controller.dart';
+import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/model/bookmark_hadist.dart';
 import 'package:quran/model/hadist.dart';
 import 'package:quran/services/api_service.dart';
@@ -23,18 +24,15 @@ class DetailHadistPage extends StatelessWidget {
       : super(key: key);
 
   final bookmark = Get.find<BookmarkController>();
+  final _themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          name,
-          style: AppTextStyle.appBarStyle,
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.grey),
+        title: Text(name),
         elevation: 1,
+        backwardsCompatibility: false,
       ),
       body: FutureBuilder<HadistsFromAuthor?>(
         future: ApiService.getHadistByAuthor(id),
@@ -115,7 +113,9 @@ class DetailHadistPage extends StatelessWidget {
                                           ? Icons.bookmark
                                           : Icons.bookmark_border_outlined),
                                       iconSize: 28,
-                                      color: AppColor.primaryColor,
+                                      color: _themeController.darkMode.value
+                                          ? AppColor.thirdColor
+                                          : AppColor.primaryColor,
                                     ),
                                   )
                                 ],

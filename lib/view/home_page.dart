@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran/controller/slider_controller.dart';
+import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/utils/color.dart';
 import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/search_page.dart';
@@ -37,18 +38,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   final _sliderController = Get.put(SliderController());
   final _headerItem = [LastReadHeader(), SalahTimeHeader()];
+  final _themwController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavigationDrawer(),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'Quran App',
-          style: AppTextStyle.appBarStyle,
-        ),
-        iconTheme: IconThemeData(color: Colors.grey),
+        title: Text('Quran App'),
+        backwardsCompatibility: false,
         actions: [
           IconButton(
               onPressed: () => Get.to(() => SearchPage()),
@@ -88,48 +86,53 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(5),
                             color:
                                 (_sliderController.currentPage.value == index)
-                                    ? AppColor.primaryColor
+                                    ? _themwController.darkMode.value
+                                        ? AppColor.thirdColor
+                                        : AppColor.primaryColor
                                     : AppColor.thirdColor.withOpacity(0.5)));
                   }))),
             ),
             SliverToBoxAdapter(
               child: Container(
-                height: 50,
-                width: double.infinity,
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                child: TabBar(
-                  unselectedLabelColor: AppColor.subtitleColor,
-                  indicatorSize: TabBarIndicatorSize.label,
-                  labelColor: AppColor.primaryColor,
-                  labelStyle:
-                      TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                  indicator: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        width: 4,
-                        color: AppColor.primaryColor,
+                  height: 50,
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: Obx(
+                    () => TabBar(
+                      unselectedLabelColor: AppColor.subtitleColor,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      labelColor: _themwController.darkMode.value
+                          ? AppColor.thirdColor
+                          : AppColor.primaryColor,
+                      labelStyle:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                      indicator: BoxDecoration(
+                        border: Border(
+                          bottom: BorderSide(
+                            width: 4,
+                            color: AppColor.primaryColor,
+                          ),
+                        ),
                       ),
+                      controller: _tabController,
+                      tabs: [
+                        Tab(
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Surah',
+                              )),
+                        ),
+                        Tab(
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Hadist',
+                              )),
+                        ),
+                      ],
                     ),
-                  ),
-                  controller: _tabController,
-                  tabs: [
-                    Tab(
-                      child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Surah',
-                          )),
-                    ),
-                    Tab(
-                      child: Align(
-                          alignment: Alignment.center,
-                          child: Text(
-                            'Hadist',
-                          )),
-                    ),
-                  ],
-                ),
-              ),
+                  )),
             ),
           ];
         },

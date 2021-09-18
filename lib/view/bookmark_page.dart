@@ -15,13 +15,9 @@ class BookmarkPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Bookmark',
-            style: AppTextStyle.appBarStyle,
-          ),
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.grey),
+          title: Text('Bookmark'),
           elevation: 1,
+          backwardsCompatibility: false,
         ),
         body: ListView(
           children: [
@@ -43,6 +39,7 @@ class BookmarkPage extends StatelessWidget {
                             bookmark.deleteVerseById(verse.numberInQuran);
                           },
                           child: Material(
+                            color: Colors.transparent,
                             child: InkWell(
                               onTap: () => Get.to(() => DetailSurahPage(
                                   id: verse.surahNumber,
@@ -88,6 +85,7 @@ class BookmarkPage extends StatelessWidget {
                                 hadist.number, hadist.idName);
                           },
                           child: Material(
+                            color: Colors.transparent,
                             child: InkWell(
                               onTap: () {
                                 Get.to(() => DetailHadistPage(

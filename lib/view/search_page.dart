@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran/controller/search_controller.dart';
+import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/utils/color.dart';
 import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/detail_surah_page.dart';
@@ -9,6 +10,7 @@ class SearchPage extends StatelessWidget {
   SearchPage({Key? key}) : super(key: key);
 
   final _searchController = Get.put(SearchController());
+  final _themeController = Get.find<ThemeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -18,34 +20,39 @@ class SearchPage extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              height: 40,
-              margin: EdgeInsets.symmetric(vertical: 10),
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: TextFormField(
-                controller: _searchController.searchField,
-                autofocus: true,
-                textAlignVertical: TextAlignVertical.bottom,
-                cursorColor: AppColor.primaryColor,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.grey[200],
-                  prefixIcon: IconButton(
-                    onPressed: () {
-                      Get.back();
+                height: 40,
+                margin: EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Obx(
+                  () => TextFormField(
+                    controller: _searchController.searchField,
+                    autofocus: true,
+                    textAlignVertical: TextAlignVertical.bottom,
+                    cursorColor: AppColor.primaryColor,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: _themeController.darkMode.value
+                          ? AppColor.primaryColor.withOpacity(0.3)
+                          : Colors.grey[200],
+                      prefixIcon: IconButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        icon: Icon(Icons.arrow_back),
+                        color: _themeController.darkMode.value
+                            ? Colors.white
+                            : AppColor.primaryColor,
+                      ),
+                      hintText: 'Cari Surat...',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          borderSide: BorderSide.none),
+                    ),
+                    onChanged: (_) {
+                      _searchController.searchSurah();
                     },
-                    icon: Icon(Icons.arrow_back),
-                    color: AppColor.primaryColor,
                   ),
-                  hintText: 'Cari Surat...',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      borderSide: BorderSide.none),
-                ),
-                onChanged: (_) {
-                  _searchController.searchSurah();
-                },
-              ),
-            ),
+                )),
             Obx(() => Expanded(
                   child: ListView.builder(
                     // shrinkWrap: true,
@@ -92,7 +99,9 @@ class SearchPage extends StatelessWidget {
                               textAlign: TextAlign.end,
                               style: TextStyle(
                                   fontSize: 18,
-                                  color: AppColor.primaryColor,
+                                  color: _themeController.darkMode.value
+                                      ? AppColor.thirdColor
+                                      : AppColor.primaryColor,
                                   fontWeight: FontWeight.w800),
                             ),
                           ),

@@ -88,10 +88,7 @@ class SalahSchedulePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Jadwal Solat',
-            style: AppTextStyle.appBarStyle,
-          ),
+          title: Text('Jadwal Solat'),
           actions: [
             IconButton(
                 onPressed: () {
@@ -100,8 +97,6 @@ class SalahSchedulePage extends StatelessWidget {
                 },
                 icon: Icon(Icons.refresh))
           ],
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(color: Colors.grey),
         ),
         body: GetBuilder<UserLocationController>(
           builder: (controller) {
