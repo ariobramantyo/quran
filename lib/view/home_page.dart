@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:quran/controller/slider_controller.dart';
 import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/utils/color.dart';
-import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/search_page.dart';
 import 'package:quran/view/widgets/hadist_tab.dart';
 import 'package:quran/view/widgets/last_read_header.dart';

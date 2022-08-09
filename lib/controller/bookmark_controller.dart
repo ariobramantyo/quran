@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:quran/model/bookmark_hadist.dart';
 import 'package:quran/model/bookmark_verse.dart';
 import 'package:quran/services/database_helper.dart';
+import 'package:quran/utils/surah_alfatihah.dart';
 
 class BookmarkController extends GetxController {
   var listVerse = List<BookmarkVerse>.empty().obs;
@@ -17,7 +18,7 @@ class BookmarkController extends GetxController {
     super.onInit();
   }
 
-  bool checkBookmarkVerse(int numberInQuran) {
+  bool checkBookmarkVerse(String numberInQuran) {
     for (int i = 0; i < listVerse.length; i++) {
       if (listVerse[i].numberInQuran == numberInQuran) {
         return true;
@@ -26,7 +27,7 @@ class BookmarkController extends GetxController {
     return false;
   }
 
-  void deleteVerseById(int numberInQuran) {
+  void deleteVerseById(String numberInQuran) {
     listVerse.removeWhere((element) => element.numberInQuran == numberInQuran);
     listVerse.refresh();
   }
@@ -57,35 +58,8 @@ class BookmarkController extends GetxController {
     }
 
     return {
-      'nameIndo': 'Al-Fatihah',
-      'numberInSurah': 1,
-      'id': 1,
+      'numberInSurah': "1",
+      'surah': surahAlfatihah.toMap(),
     };
   }
-
-  // int _getLastReadSurahVerse() {
-  //   final box = GetStorage();
-
-  //   if (box.read('lastRead') != null) {
-  //     var surahName = box.read('lastRead') as Map<String, dynamic>;
-  //     print(surahName);
-
-  //     return surahName['numberInSurah'];
-  //   }
-
-  //   return 1;
-  // }
-
-  // int _getLastReadSurahId() {
-  //   final box = GetStorage();
-
-  //   if (box.read('lastRead') != null) {
-  //     var surahName = box.read('lastRead') as Map<String, dynamic>;
-  //     print(surahName);
-
-  //     return surahName['id'];
-  //   }
-
-  //   return 1;
-  // }
 }

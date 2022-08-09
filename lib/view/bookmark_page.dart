@@ -42,8 +42,7 @@ class BookmarkPage extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () => Get.to(() => DetailSurahPage(
-                                  id: verse.surahNumber,
-                                  name: verse.surahName,
+                                  surah: verse.surah,
                                   initialIndex: verse.numberOfVerseBookmarked)),
                               child: Container(
                                 width: double.infinity,

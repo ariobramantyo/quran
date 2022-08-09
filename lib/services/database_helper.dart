@@ -26,10 +26,23 @@ class DatabaseHelper {
 
   Future _onCreate(Database db, int version) async {
     await db.execute(''' 
+      CREATE TABLE surah(
+        number TEXT PRIMARY KEY,
+        nameArab TEXT,
+        nameIndo TEXT,
+        translation TEXT,
+        numberOfVerses INTEGER,
+        preBismillah TEXT,
+        revelation TEXT
+      )
+    ''');
+
+    await db.execute(''' 
       CREATE TABLE verse(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        surah SURAH,
         surahName TEXT,
-        numberInQuran INTEGER,
+        numberInQuran TEXT,
         surahNumber INTEGER,
         numberOfVerseBookmarked INTEGER
       )
@@ -93,7 +106,7 @@ class DatabaseHelper {
     return await db.delete('hadist');
   }
 
-  Future<int> deleteVerseById(int id) async {
+  Future<int> deleteVerseById(String id) async {
     Database db = await instance.database;
 
     return await db.delete(

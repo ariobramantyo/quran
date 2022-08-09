@@ -64,8 +64,7 @@ class SearchPage extends StatelessWidget {
                         children: [
                           ListTile(
                             onTap: () => Get.to(() => DetailSurahPage(
-                                  id: surah.number,
-                                  name: surah.nameIndo,
+                                  surah: surah,
                                   initialIndex: 0,
                                 )),
                             leading: Container(
