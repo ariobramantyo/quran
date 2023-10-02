@@ -120,7 +120,7 @@ class DetailSurahPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(surah.nameIndo),
           elevation: 1,
-          backwardsCompatibility: false,
+          // backwardsCompatibility: false,
         ),
         body: FutureBuilder<List<Verse?>>(
           future: ApiService.getSurahVerses(surah.number),
