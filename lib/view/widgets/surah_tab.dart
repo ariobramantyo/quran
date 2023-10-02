@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:quran/controller/bookmark_controller.dart';
 import 'package:quran/controller/theme_controller.dart';
-import 'package:quran/model/list_surah.dart';
+import 'package:quran/model/surah.dart';
 import 'package:quran/services/api_service.dart';
 import 'package:quran/utils/color.dart';
 import 'package:quran/utils/text_style.dart';
@@ -17,7 +17,7 @@ class SurahTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ListSurah>>(
+    return FutureBuilder<List<Surah>>(
         future: ApiService.getListSurah(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
@@ -37,8 +37,7 @@ class SurahTab extends StatelessWidget {
                             ListTile(
                                 onTap: () => Get.to(() => DetailSurahPage(
                                       // surah: surah,
-                                      id: surah.number,
-                                      name: surah.nameIndo,
+                                      surah: surah,
                                       initialIndex: 0,
                                     )),
                                 leading: Container(

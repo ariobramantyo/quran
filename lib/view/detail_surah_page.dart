@@ -5,47 +5,52 @@ import 'package:lottie/lottie.dart';
 import 'package:quran/controller/bookmark_controller.dart';
 import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/model/bookmark_verse.dart';
-import 'package:quran/model/spesific_surah.dart';
+import 'package:quran/model/surah.dart';
+import 'package:quran/model/verse.dart';
 import 'package:quran/services/api_service.dart';
 import 'package:quran/services/database_helper.dart';
 import 'package:quran/utils/color.dart';
-import 'package:quran/utils/text_style.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class DetailSurahPage extends StatelessWidget {
-  final int id;
-  final String name;
+  final Surah surah;
   final int initialIndex;
 
-  DetailSurahPage(
-      {Key? key,
-      required this.id,
-      required this.name,
-      required this.initialIndex})
+  DetailSurahPage({Key? key, required this.surah, required this.initialIndex})
       : super(key: key);
 
   final bookmark = Get.find<BookmarkController>();
   final themeController = Get.find<ThemeController>();
 
-  void pinLastRead(String nameIndo, int numberInSurah) {
+  void pinLastRead(int numberInSurah) {
     final box = GetStorage();
 
     Map<String, dynamic> value = {
-      'nameIndo': nameIndo,
       'numberInSurah': numberInSurah,
-      'id': id,
+      'surah': this.surah.toMap()
     };
 
     bookmark.lastRead.value = value;
     box.write('lastRead', value);
   }
 
+  String _removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return htmlText.replaceAll(exp, '');
+  }
+
   void showSnackbar(String title, String message) {
     Get.snackbar(title, message);
   }
 
-  Widget containerHeader(String nameIndo, String translation,
-      String preBismillah, int numberOfVerses, String revelation, int number) {
+  Widget containerHeader(
+      String nameIndo,
+      String translation,
+      String preBismillah,
+      int numberOfVerses,
+      String revelation,
+      String number) {
     return Container(
       width: double.infinity,
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -91,11 +96,13 @@ class DetailSurahPage extends StatelessWidget {
             style: TextStyle(
                 color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
           ),
-          if (number != 1 && number != 9)
+          if (number != "1" && number != "9")
             Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 10),
                 Text(preBismillah,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 30,
@@ -111,12 +118,12 @@ class DetailSurahPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(name),
+          title: Text(surah.nameIndo),
           elevation: 1,
-          backwardsCompatibility: false,
+          // backwardsCompatibility: false,
         ),
-        body: FutureBuilder<SpesificSurah?>(
-          future: ApiService.getSpesificSurah(id),
+        body: FutureBuilder<List<Verse?>>(
+          future: ApiService.getSurahVerses(surah.number),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Lottie.asset('assets/error_lottie.json',
@@ -126,21 +133,22 @@ class DetailSurahPage extends StatelessWidget {
               return snapshot.data != null
                   ? ScrollablePositionedList.builder(
                       initialScrollIndex: initialIndex,
-                      itemCount: snapshot.data!.numberOfVerses + 1,
+                      itemCount: snapshot.data!.length + 1,
                       itemBuilder: (context, index) {
-                        var surah = snapshot.data;
+                        // var surah = snapshot.data;
+                        print(snapshot.data!.length);
                         var verse = index == 0
-                            ? snapshot.data!.verses[index]
-                            : snapshot.data!.verses[index - 1];
+                            ? snapshot.data![index]
+                            : snapshot.data![index - 1];
 
                         return (index == 0)
                             ? containerHeader(
-                                surah!.nameIndo,
-                                surah.translation,
-                                surah.preBismillah,
-                                surah.numberOfVerses,
-                                surah.revelation,
-                                surah.number)
+                                this.surah.nameIndo,
+                                this.surah.translation,
+                                this.surah.preBismillah,
+                                this.surah.numberOfVerses,
+                                this.surah.revelation,
+                                this.surah.number)
                             : Container(
                                 margin: EdgeInsets.symmetric(
                                     vertical: 15, horizontal: 20),
@@ -167,7 +175,7 @@ class DetailSurahPage extends StatelessWidget {
                                                   color: AppColor.primaryColor,
                                                   shape: BoxShape.circle),
                                               child: Text(
-                                                verse.numberInSurah.toString(),
+                                                verse!.numberInSurah.toString(),
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.white,
@@ -179,11 +187,11 @@ class DetailSurahPage extends StatelessWidget {
                                               Obx(
                                                 () => IconButton(
                                                   onPressed: () {
-                                                    pinLastRead(surah!.nameIndo,
-                                                        verse.numberInSurah);
+                                                    pinLastRead(int.parse(
+                                                        verse.numberInSurah));
                                                     Get.snackbar(
                                                         'Terakhir dibaca',
-                                                        'Q.S. ${surah.nameIndo} ayat ${verse.numberInSurah} ditandai terakhir dibaca');
+                                                        'Q.S. ${this.surah.nameIndo} ayat ${verse.numberInSurah} ditandai terakhir dibaca');
                                                   },
                                                   icon: Icon(bookmark.lastRead[
                                                                   'numberInSurah'] ==
@@ -191,7 +199,7 @@ class DetailSurahPage extends StatelessWidget {
                                                                   .numberInSurah &&
                                                           bookmark.lastRead[
                                                                   'id'] ==
-                                                              id
+                                                              this.surah.number
                                                       ? Icons.push_pin
                                                       : Icons
                                                           .push_pin_outlined),
@@ -214,16 +222,20 @@ class DetailSurahPage extends StatelessWidget {
                                                       bookmark.deleteVerseById(
                                                           verse.numberInQuran);
                                                       Get.snackbar('Bookmark',
-                                                          'Q.S. ${surah!.nameIndo} ayat ${verse.numberInSurah} dihapus dari folder bookmark');
+                                                          'Q.S. ${this.surah.nameIndo} ayat ${verse.numberInSurah} dihapus dari folder bookmark');
                                                     } else {
                                                       var bookmarkVerse = BookmarkVerse(
+                                                          surah: this.surah,
                                                           numberInQuran: verse
                                                               .numberInQuran,
-                                                          surahName: name,
-                                                          surahNumber: id,
+                                                          surahName: this
+                                                              .surah
+                                                              .nameIndo,
+                                                          surahNumber:
+                                                              this.surah.number,
                                                           numberOfVerseBookmarked:
-                                                              verse
-                                                                  .numberInSurah);
+                                                              int.parse(verse
+                                                                  .numberInSurah));
 
                                                       DatabaseHelper.instance
                                                           .addVerse(
@@ -233,7 +245,7 @@ class DetailSurahPage extends StatelessWidget {
                                                       bookmark.listVerse
                                                           .refresh();
                                                       Get.snackbar('Bookmark',
-                                                          'Q.S. ${surah!.nameIndo} ayat ${verse.numberInSurah} ditambahkan ke folder bookmark');
+                                                          'Q.S. ${this.surah.nameIndo} ayat ${verse.numberInSurah} ditambahkan ke folder bookmark');
                                                     }
                                                   },
                                                   icon: Icon(bookmark
@@ -269,7 +281,7 @@ class DetailSurahPage extends StatelessWidget {
                                         width: double.infinity,
                                         child: Obx(
                                           () => Text(
-                                            verse.textLatin,
+                                            _removeAllHtmlTags(verse.textLatin),
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
                                                 fontSize: 20,

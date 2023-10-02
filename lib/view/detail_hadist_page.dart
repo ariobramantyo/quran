@@ -8,7 +8,7 @@ import 'package:quran/model/hadist.dart';
 import 'package:quran/services/api_service.dart';
 import 'package:quran/services/database_helper.dart';
 import 'package:quran/utils/color.dart';
-import 'package:quran/utils/text_style.dart';
+// import 'package:quran/utils/text_style.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 class DetailHadistPage extends StatelessWidget {
@@ -32,7 +32,7 @@ class DetailHadistPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(name),
         elevation: 1,
-        backwardsCompatibility: false,
+        // backwardsCompatibility: false,
       ),
       body: FutureBuilder<HadistsFromAuthor?>(
         future: ApiService.getHadistByAuthor(id),

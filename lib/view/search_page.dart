@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quran/controller/search_controller.dart';
+import 'package:quran/controller/search_controller.dart' as controller;
 import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/utils/color.dart';
 import 'package:quran/utils/text_style.dart';
@@ -9,7 +9,7 @@ import 'package:quran/view/detail_surah_page.dart';
 class SearchPage extends StatelessWidget {
   SearchPage({Key? key}) : super(key: key);
 
-  final _searchController = Get.put(SearchController());
+  final _searchController = Get.put(controller.SearchController());
   final _themeController = Get.find<ThemeController>();
 
   @override
@@ -64,8 +64,7 @@ class SearchPage extends StatelessWidget {
                         children: [
                           ListTile(
                             onTap: () => Get.to(() => DetailSurahPage(
-                                  id: surah.number,
-                                  name: surah.nameIndo,
+                                  surah: surah,
                                   initialIndex: 0,
                                 )),
                             leading: Container(

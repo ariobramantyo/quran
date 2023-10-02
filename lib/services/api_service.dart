@@ -1,52 +1,54 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:quran/model/hadist.dart';
-import 'package:quran/model/list_surah.dart';
+import 'package:quran/model/surah.dart';
 import 'package:quran/model/salah_time.dart';
-import 'package:quran/model/spesific_surah.dart';
+import 'package:quran/model/verse.dart';
 
 class ApiService {
-  static Future<List<ListSurah>> getListSurah() async {
-    Uri url = Uri.parse('https://api.quran.sutanlab.id/surah');
+  static Future<List<Surah>> getListSurah() async {
+    // Uri url = Uri.parse('https://api.quran.sutanlab.id/surah');
+    Uri url = Uri.parse('https://api.npoint.io/99c279bb173a6e28359c/data');
 
     try {
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body)['data'];
+        List<dynamic> data = jsonDecode(response.body);
 
-        List<ListSurah> listSurah =
-            data.map((json) => ListSurah.fromJson(json)).toList();
+        List<Surah> listSurah =
+            data.map((json) => Surah.fromJson(json)).toList();
 
         return listSurah;
       } else {
-        return List<ListSurah>.empty();
+        return List<Surah>.empty();
       }
     } catch (e) {
       print(e.toString());
-      return List<ListSurah>.empty();
+      return List<Surah>.empty();
     }
   }
 
-  static Future<SpesificSurah?> getSpesificSurah(int id) async {
-    Uri url = Uri.parse('https://api.quran.sutanlab.id/surah/$id');
+  static Future<List<Verse?>> getSurahVerses(String id) async {
+    // Uri url = Uri.parse('https://api.quran.sutanlab.id/surah/$id');
+    Uri url = Uri.parse('https://api.npoint.io/99c279bb173a6e28359c/surat/$id');
 
     try {
       var response = await http.get(url);
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> data =
-            jsonDecode(response.body)['data'] as Map<String, dynamic>;
+        List<dynamic> data = jsonDecode(response.body);
 
-        SpesificSurah surah = SpesificSurah.fromJson(data);
+        List<Verse> listSurahVerses =
+            data.map((json) => Verse.fromJson(json, id)).toList();
 
-        return surah;
+        return listSurahVerses;
       } else {
-        return null;
+        return List<Verse>.empty();
       }
     } catch (e) {
       print(e.toString());
-      return null;
+      return List<Verse>.empty();
     }
   }
 

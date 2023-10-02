@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quran/controller/bookmark_controller.dart';
 import 'package:quran/services/database_helper.dart';
-import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/detail_hadist_page.dart';
 import 'package:quran/view/detail_surah_page.dart';
 
@@ -17,7 +16,7 @@ class BookmarkPage extends StatelessWidget {
         appBar: AppBar(
           title: Text('Bookmark'),
           elevation: 1,
-          backwardsCompatibility: false,
+          // backwardsCompatibility: false,
         ),
         body: ListView(
           children: [
@@ -42,8 +41,7 @@ class BookmarkPage extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () => Get.to(() => DetailSurahPage(
-                                  id: verse.surahNumber,
-                                  name: verse.surahName,
+                                  surah: verse.surah,
                                   initialIndex: verse.numberOfVerseBookmarked)),
                               child: Container(
                                 width: double.infinity,

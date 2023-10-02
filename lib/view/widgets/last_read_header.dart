@@ -3,24 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:quran/controller/bookmark_controller.dart';
+import 'package:quran/model/surah.dart';
 import 'package:quran/utils/color.dart';
+import 'package:quran/utils/surah_alfatihah.dart';
 import 'package:quran/view/detail_surah_page.dart';
 
 class LastReadHeader extends StatelessWidget {
   LastReadHeader({Key? key}) : super(key: key);
-
-  String _getLastReadSurahName() {
-    final box = GetStorage();
-
-    if (box.read('lastRead') != null) {
-      var surahName = box.read('lastRead') as Map<String, dynamic>;
-      print(surahName);
-
-      return surahName['nameIndo'].toString();
-    }
-
-    return 'Al-Fatihah';
-  }
 
   int _getLastReadSurahVerse() {
     final box = GetStorage();
@@ -35,17 +24,16 @@ class LastReadHeader extends StatelessWidget {
     return 1;
   }
 
-  int _getLastReadSurahId() {
+  Surah _getLastReadSurah() {
     final box = GetStorage();
 
     if (box.read('lastRead') != null) {
-      var surahName = box.read('lastRead') as Map<String, dynamic>;
-      print(surahName);
+      var surah = box.read('lastRead') as Map<String, dynamic>;
 
-      return surahName['id'];
+      return Surah.fromJson(surah['surah']);
     }
 
-    return 1;
+    return surahAlfatihah;
   }
 
   final _bookmark = Get.put(BookmarkController());
@@ -108,7 +96,7 @@ class LastReadHeader extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _bookmark.lastRead['nameIndo'],
+                            _bookmark.lastRead['surah']['nama'],
                             style: TextStyle(
                                 fontSize: 22,
                                 color: Colors.white,
@@ -130,8 +118,7 @@ class LastReadHeader extends StatelessWidget {
                       alignment: Alignment.bottomRight,
                       child: InkWell(
                         onTap: () => Get.to(() => DetailSurahPage(
-                              id: _getLastReadSurahId(),
-                              name: _getLastReadSurahName(),
+                              surah: _getLastReadSurah(),
                               initialIndex: _getLastReadSurahVerse(),
                             )),
                         child: Container(

@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:quran/model/list_surah.dart';
+import 'package:quran/model/surah.dart';
 import 'package:quran/services/api_service.dart';
 
 class SearchController extends GetxController {
   late TextEditingController searchField;
-  var listSurah = List<ListSurah>.empty().obs;
-  var listSurahDisplay = List<ListSurah>.empty().obs;
+  var listSurah = List<Surah>.empty().obs;
+  var listSurahDisplay = List<Surah>.empty().obs;
 
   @override
   void onInit() async {

@@ -3,11 +3,10 @@ import 'package:get/get.dart';
 import 'package:quran/controller/slider_controller.dart';
 import 'package:quran/controller/theme_controller.dart';
 import 'package:quran/utils/color.dart';
-import 'package:quran/utils/text_style.dart';
 import 'package:quran/view/search_page.dart';
 import 'package:quran/view/widgets/hadist_tab.dart';
 import 'package:quran/view/widgets/last_read_header.dart';
-import 'package:quran/view/widgets/navigation_drawer.dart';
+import 'package:quran/view/widgets/navigation_drawer.dart' as drawer;
 import 'package:quran/view/widgets/salah_time_header.dart';
 import 'package:quran/view/widgets/surah_tab.dart';
 
@@ -43,10 +42,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: NavigationDrawer(),
+      drawer: drawer.NavigationDrawer(),
       appBar: AppBar(
         title: Text('Quran App'),
-        backwardsCompatibility: false,
+        // backwardsCompatibility: false,
         actions: [
           IconButton(
               onPressed: () => Get.to(() => SearchPage()),
